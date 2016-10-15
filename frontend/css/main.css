@@ -1,0 +1,186 @@
+html {
+  background-color: #E99367;
+}
+
+body {
+  font-size: 1.5em;
+  line-height: 1.6;
+  font-weight: 400;
+  font-family: -apple-system, BlinkMacSystemFont, "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color:rgb(34, 34, 34);
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.hero {
+  padding-top: 40px;
+  min-height: 100%;
+  /*padding-bottom: 8em;*/
+  width: auto;
+  max-width: 800px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin: auto;
+  opacity: 1;
+}
+
+.hero-image {
+  width: 202px;
+  margin: auto;
+  position: relative;
+}
+
+.hero-image_bear {
+  width: 202px;
+}
+
+.hero-image_glasses {
+  width: 202px;
+  opacity: 1;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
+.hero-image_eyes {
+  height: 180px;
+  width: 202px;
+  opacity: 1;
+  position: absolute;
+  left: 44px;
+  top: 0px;
+  transition: top 0.7s ease-out;
+  transform: translateY(76px);
+}
+
+.hero-text {
+  font-weight: 700;
+  margin: auto;
+  position: relative;
+  text-align: center;
+  font-size: 48px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.button:hover, button:hover, input[type="submit"]:hover, input[type="reset"]:hover, input[type="button"]:hover {
+  background-color: #371A08;
+  color: #ffffff;
+}
+
+.button, button, input[type="submit"], input[type="reset"], input[type="button"] {
+  display: inline-block;
+  min-height: 50px;
+  padding: 0 30px;
+  color: #371A08;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  border: 4px solid #371A08;
+  border-radius: 0;
+  background-color: transparent;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: all 0.2s ease-in-out;
+}
+
+.hero-message {
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 20px;
+}
+
+.hero-cta {
+  text-align: center;
+  margin: auto;
+}
+
+.hero-cta_button {
+  text-transform: uppercase;
+  width: 200px;
+}
+
+.hero-subtext {
+  font-size: 10px;
+  text-align: center;
+  margin: auto;
+  margin-top: 10px;
+  max-width: 200px;
+}
+
+.hero-cta_button {
+  position: relative;
+  top: 0px;
+  transition: top 0.7s ease-in,
+              border-top 0.7s ease-in,
+              border-left 0.7s ease-in,
+              border-right 0.7s ease-in;
+}
+
+.hero > * {
+  transition: all 0.5s ease-in;
+}
+
+.transitioning {
+  opacity: 0 !important;
+}
+
+.moving {
+  top: -420px;
+}
+
+.moving_done {
+  transition: border-top 0.7s ease-in,
+              border-left 0.7s ease-in,
+              border-right 0.7s ease-in,
+              background 0.7s ease-in;
+}
+
+.button_transitioned {
+  background: none !important;
+  color: #371A08 !important;
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  top: 0px;
+}
+
+.hidden {
+  display: none;
+}
+
+.SignupContent {
+  opacity: 1;
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+  transition: all 0.5s ease-in;
+}
+
+.SignupContent_camera {
+  width: 300px;
+  margin: auto;
+}
+
+.SignupContent_camera_snap {
+  position: relative;
+  top: -120px;
+  background-color: #E99367;
+}
+
+.SignupContent_camera_container {
+  width: 300px;
+  height: 200px;
+  margin: auto;
+}
+
+#canvas {
+  display: none;
+}
+
+h2 {
+  margin: 0;
+}
