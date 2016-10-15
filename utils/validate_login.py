@@ -1,5 +1,11 @@
+from flask import session
+
+
 def valid_login(username, password):
-    return True
+    # TODO Implement
+    return username and password
 
 def log_the_user_in(username):
-    pass
+    # TODO change to user id once things are implemented
+    session['username'] = username
+    return "Welcome, {}".format(username)
