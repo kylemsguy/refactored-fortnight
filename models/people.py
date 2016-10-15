@@ -1,7 +1,7 @@
 import uuid
 
-from app import db
-from sqlalchemy.dialects.postgresql import JSON, UUID
+from database import db
+from sqlalchemy.dialects.postgresql import UUID
 
 
 class User(db.Model):
@@ -9,6 +9,7 @@ class User(db.Model):
 
     id = db.Column(UUID, primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(), nullable=False)
+    type = db.Column(db.String(), nullable=False, default='hacker')
     slack_id = db.Column(db.String(), nullable=False)
     skill = db.Column(db.String(), nullable=False)
     team_id = db.Column(UUID, db.ForeignKey('teams.id'))

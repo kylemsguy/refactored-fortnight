@@ -1,4 +1,5 @@
 from flask import session
+from models import people
 
 
 def valid_login(username, password):
@@ -14,3 +15,9 @@ def log_the_user_in(username):
 
 def is_logged_in():
     return 'username' in session
+
+
+def create_user(username, password):
+    user = people.User(
+        name=username,
+    )
