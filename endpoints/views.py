@@ -1,6 +1,5 @@
-from flask import redirect, request, session, render_template
+from flask import session, render_template
 
-from database import db
 from endpoints.utils import root
 
 from utils.validate_login import is_logged_in

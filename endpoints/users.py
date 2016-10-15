@@ -1,13 +1,13 @@
 from flask import request, render_template, redirect, session
 
 from endpoints.utils import root
-from utils.validate_login import valid_login, log_the_user_in, is_logged_in, create_user
+from utils.validate_login import valid_login, log_the_user_in, register_user, create_user
+from utils import errors
 
-@root.route('/register', methods=['POST'])
+@root.route('/register', methods=['GET', 'POST'])
 def register():
-    if not is_logged_in():
-        # register user
-        pass
+    if request.method == 'POST':
+        register_user()
 
 
 @root.route('/login', methods=['POST', 'GET'])
