@@ -3,8 +3,10 @@ import uuid
 from database import db
 from sqlalchemy.dialects.postgresql import UUID
 
+import flask_login
 
-class User(db.Model):
+
+class User(db.Model, flask_login.UserMixin):
     __tablename__ = 'users'
 
     id = db.Column(UUID, primary_key=True, default=uuid.uuid4)
@@ -23,6 +25,17 @@ class User(db.Model):
     def __repr__(self):
         return '<id {}>'.format(self.id)
 
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
 
 class Team(db.Model):
     __tablename__ = 'teams'

@@ -1,5 +1,8 @@
+import uuid
+
 from flask import session
 
+from database import db
 from models import people
 from utils import errors
 
@@ -29,3 +32,11 @@ def create_user(username, password):
     user = people.User(
         name=username,
     )
+
+def get_user(uid):
+    """Returns the currently logged in user"""
+    uid = uuid.UUID(uid)
+    model = people.User.query.filter_by(id=uid).first()
+    if not model:
+        return None
+    return model
