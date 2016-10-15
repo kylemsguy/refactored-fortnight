@@ -12,6 +12,9 @@
       Welcome to my awesome homepage.
     </p>
     <form action="login" method="post">
+        {% if error %}
+            <div id="login_error">{{ error }}</div>
+        {% endif %}
         <label for="user">Username: </label>
         <input id="user" type="text" name="user">
         <br>
