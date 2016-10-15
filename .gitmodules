@@ -1,0 +1,3 @@
+[submodule "slackdev/python-slackclient"]
+	path = slackdev/python-slackclient
+	url = https://github.com/slackhq/python-slackclient.git
