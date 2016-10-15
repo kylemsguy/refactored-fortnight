@@ -261,3 +261,8 @@ jspm_packages
 
 # Output of 'npm pack'
 *.tgz
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

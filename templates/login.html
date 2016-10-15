@@ -11,7 +11,8 @@
     <p class="important">
       Welcome to my awesome homepage.
     </p>
-    <form action="login" method="post">
+    <a href="/login">Log In with Slack</a>
+    <form action="login" method="post" style="display:none;">
         {% if error %}
             <div id="login_error">{{ error }}</div>
         {% endif %}
