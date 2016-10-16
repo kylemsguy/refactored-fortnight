@@ -1,6 +1,8 @@
 import os
 import time
 from slackclient import SlackClient
+from db import Session as session
+from models.people import User
 
 # starterbot's ID as an environment variable
 BOT_ID = os.environ.get("BOT_ID")
@@ -14,7 +16,7 @@ slack_client = SlackClient(os.environ.get('SLACK_TOKEN'))
 
 def handle_command(command, channel):
 	"""
-		gets commands directed at bot, determines if valid. 
+		gets commands directed at bot, determines if valid.
 		if so then acts on commands
 		if not returns whats needed for clarification
 	"""
@@ -51,13 +53,13 @@ def send_message(channel_id, message):
 
 
 if __name__ == "__main__":
-        READ_WEBSOCKET_DELAY = 1 #1 sec delay b/w reading from firehose
-        if slack_client.rtm_connect():
-                print("StarterBot connected and running!")
-                while True:
-                        command, channel = parse_slack_output(slack_client.rtm_read())
-                        if command and channel:
-                                handle_command(command, channel)
-                        time.sleep(READ_WEBSOCKET_DELAY)
-        else:
-                print("Connection failed. Invalid Slack token or bot ID?")
+    READ_WEBSOCKET_DELAY = 1 #1 sec delay b/w reading from firehose
+    if slack_client.rtm_connect():
+            print("StarterBot connected and running!")
+            while True:
+                    command, channel = parse_slack_output(slack_client.rtm_read())
+                    if command and channel:
+                            handle_command(command, channel)
+                    time.sleep(READ_WEBSOCKET_DELAY)
+    else:
+            print("Connection failed. Invalid Slack token or bot ID?")

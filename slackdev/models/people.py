@@ -1,9 +1,9 @@
 import uuid
 
-from database import db
 from sqlalchemy.dialects.postgresql import UUID
-
-import flask_login
+import sqlalchemy as sa
+from sqlalchemy.orm import relationship
+from db import Base
 
 '''
 Format of Slack's user query response
@@ -17,15 +17,15 @@ Format of Slack's user query response
 }
 '''
 
-class User(db.Model, flask_login.UserMixin):
+class User(Base):
     __tablename__ = 'users'
 
-    id = db.Column(UUID, primary_key=True, default=uuid.uuid4)
-    name = db.Column(db.String(), nullable=False)
-    type = db.Column(db.String(), nullable=False, default='hacker')
-    slack_id = db.Column(db.String(), nullable=False)
-    skill = db.Column(db.String(), nullable=False)
-    team_id = db.Column(UUID, db.ForeignKey('teams.id'))
+    id = sa.Column(UUID, primary_key=True, default=uuid.uuid4)
+    name = sa.Column(sa.String(), nullable=False)
+    type = sa.Column(sa.String(), nullable=False, default='hacker')
+    slack_id = sa.Column(sa.String(), nullable=False)
+    skill = sa.Column(sa.String(), nullable=False)
+    team_id = sa.Column(UUID, sa.ForeignKey('teams.id'))
 
     def __init__(self, id, name, type, slack_id, skill):
         self.id = id
@@ -49,16 +49,15 @@ class User(db.Model, flask_login.UserMixin):
     def get_id(self):
         return str(self.id)
 
-class Team(db.Model):
+class Team(Base):
     __tablename__ = 'teams'
 
-    id = db.Column(UUID, primary_key=True, default=uuid.uuid4)
-    name = db.Column(db.String(), nullable=False, unique=True)
-    members = db.relationship("User")
+    id = sa.Column(UUID, primary_key=True, default=uuid.uuid4)
+    name = sa.Column(sa.String(), nullable=False, unique=True)
+    members = relationship("User")
 
-class Hack(db.Model):
+class Hack(Base):
     __tablename__ = 'stats'
 
-    id = db.Column(UUID, primary_key=True, default=uuid.uuid4)
-    user_id = db.Column(UUID, db.ForeignKey('users.id'))
-
+    id = sa.Column(UUID, primary_key=True, default=uuid.uuid4)
+    user_id = sa.Column(UUID, sa.ForeignKey('users.id'))
