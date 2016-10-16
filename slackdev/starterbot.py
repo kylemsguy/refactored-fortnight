@@ -3,9 +3,11 @@ import time
 import re
 from random import randint
 from slackclient import SlackClient
+from db import Session as session
+from models.people import User
 
 # starterbot's ID as an environment variable
-BOT_ID = os.environ.get("BOT_ID")
+BOT_ID = "U2PU5P3L4"
 
 # constants
 AT_BOT = "<@" + BOT_ID + ">:"
@@ -15,7 +17,7 @@ HOURS_IN_HACKATHON = 36
 THREE_CLASSES = ["front end developer", "back end developer", "designer"]
 
 # instantiate Slack & Twilio clients
-slack_client = SlackClient(os.environ.get('SLACK_TOKEN'))
+slack_client = SlackClient(os.environ.get('SLACK_BOT_TOKEN'))
 
 # player progess and info
 player_stages = {}
@@ -24,12 +26,14 @@ player_type = None  # String from THREE_CLASSES
 player_scores = {}  # front(0), back(1), design(2)
 player_roadblocks = {}
 
-def handle_command(command, channel):
+def handle_command(command, channel, message):
     """
         gets commands directed at bot, determines if valid. 
         if so then acts on commands
         if not returns whats needed for clarification
     """
+    user = getOrInitializeUser(message['user'])
+
     if channel not in player_stages:
         player_stages[channel] = "unstarted"
 
@@ -72,35 +76,48 @@ def handle_command(command, channel):
                 "Occasionally you'll come across a roadblock with your hack, " + \
                 "you'll need to network with the hackers around you to overcome these problems."
     elif stage == "type_chosen" and input.startswith("link"):
-        pass
+        
 
     slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
 
+def find
+
+def getOrInitializeUser(userid):
+	user = session.query(User).filter(User.slack_id == userid).one_or_none()
+	if user is None:
+		profile_info = slack_client.api_call("users.info", user=userid)
+		if profile_info['ok']:
+			user = User(name=profile_info['user']['profile']['first_name'], skill="nope")
+		else:
+			user = User(name="unknown", skill="nope")
+		session.add(user)
+		session.commit()
+	return user
 
 def parse_slack_output(slack_rtm_output):
-    """
-        The Slack Real Time Messaging API is an events firehose.
-        this parsing function returns None unless a message is
-        directed at the Bot, based on its ID.
-    """
-    output_list = slack_rtm_output
-    if output_list and len(output_list) > 0:
-        for output in output_list:
-            if output and 'text' in output and AT_BOT in output['text']:
-                ## return text after the @ mention, w/o whitespace
-                return output['text'].split(AT_BOT)[1].strip().lower(), output['channel']
-    return None, None
-
+	"""
+		The Slack Real Time Messaging API is an events firehose.
+		this parsing function returns None unless a message is
+		directed at the Bot, based on its ID.
+	"""
+	output_list = slack_rtm_output
+	if output_list and len(output_list) > 0:
+		for output in output_list:
+			if output and 'text' in output:
+				print(output)
+			if output and 'text' in output and AT_BOT in output['text']:
+				## return text after the @ mention, w/o whitespace
+				return output['text'].split(AT_BOT)[1].strip().lower(), output['channel'], output
+	return None, None, None
 
 def send_message(channel_id, message):
-    # channel_id can also be the form @username (all lowercase)
-    slack_client.api_call(
-        "chat.postMessage",
-        channel=channel_id,
-        text=message,
-        username='hackthewest',
-        # icon_emoji=':lenny:' # optional
-    )
+	# channel_id can also be the form @username (all lowercase)
+	slack_client.api_call(
+		"chat.postMessage",
+		channel=channel_id,
+		text=message,
+		username='hackthewest',
+	)
 
 
 def increment_timer():
@@ -146,9 +163,9 @@ if __name__ == "__main__":
         if slack_client.rtm_connect():
                 print("StarterBot connected and running!")
                 while True:
-                        command, channel = parse_slack_output(slack_client.rtm_read())
+                        command, channel, message = parse_slack_output(slack_client.rtm_read())
                         if command and channel:
-                                handle_command(command, channel)
+                                handle_command(command, channel, message)
                         increment_timer()
                         time.sleep(READ_WEBSOCKET_DELAY)
         else:
