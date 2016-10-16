@@ -26,6 +26,7 @@ class User(Base):
     slack_id = sa.Column(sa.String(), nullable=False)
     skill = sa.Column(sa.String(), nullable=False)
     team_id = sa.Column(UUID, sa.ForeignKey('teams.id'))
+    tutorial_status = sa.Column(sa.Integer(), nullable=False, default=0)
 
     def __init__(self, id, name, type, slack_id, skill):
         self.id = id
