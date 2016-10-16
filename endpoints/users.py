@@ -6,9 +6,11 @@ from flask_login import login_required, logout_user, login_user
 
 from requests_oauthlib import OAuth2Session
 
-from endpoints.utils import root
+from endpoints.utils import root, api
 from utils.validate_login import register_user, check_user_exists
 from utils import errors
+
+from models.people import Team
 
 client_id = os.environ['SOCIAL_AUTH_SLACK_KEY']
 client_secret = os.environ['SOCIAL_AUTH_SLACK_SECRET']
@@ -44,7 +46,7 @@ def oauth_success():
     # No person in db. Register.
     if not person:
         session['new_user'] = resp
-        return redirect(url_for('register'))
+        return redirect('/register')
 
     # Login successful! Show dashboard.
     return redirect('/')
@@ -59,7 +61,7 @@ def register():
         return redirect('/')
 
     if request.method == 'GET':
-        return render_template("skill.html")
+        return render_template("skill.html", name=new_user['user'])
     else:
         incoming_data = request.json()
         register_user(
@@ -68,6 +70,14 @@ def register():
         )
         return redirect('/')
 
+
+@api.route('/team-availablity')
+def check_team_availability():
+    team_name = request.args.get('name')
+    if not team_name:
+        raise errors.InvalidUsage('Team name must be provided.')
+    q = Team.query.filter_by(name=team_name)
+    return not q.exists()
 
 @root.route('/logout', methods=['GET'])
 def logout():

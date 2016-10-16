@@ -53,5 +53,5 @@ class Team(db.Model):
     __tablename__ = 'teams'
 
     id = db.Column(UUID, primary_key=True, default=uuid.uuid4)
-    name = db.Column(db.String(), nullable=False)
+    name = db.Column(db.String(), nullable=False, unique=True)
     members = db.relationship("User")

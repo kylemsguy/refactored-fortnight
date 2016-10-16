@@ -1,10 +1,78 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block title %}Skill{% endblock %}
+{% block head %}
+    {{ super() }}
+    <style type="text/css">
+        .important { color: #336699; }
+        #team-create-join {
+            display: none;
+        }
+        #create-team-form {
+            display: none;
+        }
+    </style>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            $('#next-button').click(function(){
+                $('#skill-form').hide();
+                $('#team-create-join').show();
+            });
+            $('#create-button').click(function(){
+                $('#team-create-join').hide();
+                $('#create-team-form').show()
+            });
+            $('#join-button').click(function(){
 
-</body>
-</html>
+            });
+            $('#check-team-button').click(function(){
+                var name = $('#team-name').val();
+                $.get(
+                    '/api/team-availability?name=' + name,
+                    function(result){
+                        if(result) {
+                            $('#team-name').attr('disabled', true);
+                            $('#join-button').attr('disabled', true);
+                            $('#submit-button').attr('disabled', false);
+                        } else {
+                            $('#login_error').html("That team name is already taken.");
+                        }
+                    }
+                );
+            });
+        });
+    </script>
+{% endblock %}
+{% block content %}
+    <h1>Index</h1>
+    <p class="important">
+      Welcome, {{ name }}. Please enter your information below:
+    </p>
+        {% if error %}
+            <div id="login_error">{{ error }}</div>
+        {% endif %}
+    <form action="login" method="post">
+        <div id="skill-form">
+            <label for="skill" id="">Skill: </label>
+            <select id="skill" name="skill"><br>
+                <option value="coder" selected>Coder</option>
+                <option value="designer">Designer</option>
+            </select>
+            <br>
+            <input type="button" value="Next" id="next-button">
+            <br>
+        </div>
+        <div id="team-create-join">
+            Create/Join Team
+            <br>
+            <input type="button" value="Create" id="join-button">
+            <input type="button" value="Join" id="create-button">
+        </div>
+        <div id="create-team-form">
+            <label for="team-name">New Team Name: </label>
+            <input type="text" name="team-name" id="team-name">
+            <input type="button" value="Check Availability" id="check-team-button">
+            <input type="submit" value="Submit" id="submit-button" disabled>
+        </div>
+    </form>
+{% endblock %}
