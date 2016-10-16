@@ -55,3 +55,10 @@ class Team(db.Model):
     id = db.Column(UUID, primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(), nullable=False, unique=True)
     members = db.relationship("User")
+
+class Hack(db.Model):
+    __tablename__ = 'stats'
+
+    id = db.Column(UUID, primary_key=True, default=uuid.uuid4)
+    user_id = db.Column(UUID, db.ForeignKey('users.id'))
+

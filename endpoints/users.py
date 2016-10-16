@@ -71,13 +71,14 @@ def register():
         return redirect('/')
 
 
-@api.route('/team-availablity')
+@api.route('/team-availability')
 def check_team_availability():
     team_name = request.args.get('name')
     if not team_name:
         raise errors.InvalidUsage('Team name must be provided.')
     q = Team.query.filter_by(name=team_name)
-    return not q.exists()
+    return str(q.count() == 0)
+
 
 @root.route('/logout', methods=['GET'])
 def logout():
