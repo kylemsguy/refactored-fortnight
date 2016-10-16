@@ -7,7 +7,7 @@ from flask_login import login_required, logout_user, login_user
 from requests_oauthlib import OAuth2Session
 
 from endpoints.utils import root
-from utils.validate_login import register_user, login_user
+from utils.validate_login import register_user, check_user_exists
 from utils import errors
 
 client_id = os.environ['SOCIAL_AUTH_SLACK_KEY']
@@ -39,7 +39,7 @@ def oauth_success():
     if resp['team'] != 'Hack Western 3':
         raise errors.InvalidUsage("Expected Hack Western 3 team. Got {}".format(resp['team']))
 
-    person = login_user(resp['user_id'])
+    person = check_user_exists(resp['user_id'])
 
     # No person in db. Register.
     if not person:
@@ -59,9 +59,14 @@ def register():
         return redirect('/')
 
     if request.method == 'GET':
-        return render_template("register.html")
+        return render_template("skill.html")
     else:
-        register_user
+        incoming_data = request.json()
+        register_user(
+            {'skill': incoming_data['skill']},
+            incoming_data.get('team_data'),
+        )
+        return redirect('/')
 
 
 @root.route('/logout', methods=['GET'])

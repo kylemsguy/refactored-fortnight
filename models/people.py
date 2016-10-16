@@ -5,6 +5,17 @@ from sqlalchemy.dialects.postgresql import UUID
 
 import flask_login
 
+'''
+Format of Slack's user query response
+{
+  "ok": true,
+  "team": "Hack Western 3",
+  "team_id": "<team_id>",
+  "url": "https://hackwestern3.slack.com/",
+  "user": "user",
+  "user_id": "<uid>"
+}
+'''
 
 class User(db.Model, flask_login.UserMixin):
     __tablename__ = 'users'
@@ -16,9 +27,10 @@ class User(db.Model, flask_login.UserMixin):
     skill = db.Column(db.String(), nullable=False)
     team_id = db.Column(UUID, db.ForeignKey('teams.id'))
 
-    def __init__(self, id, name, slack_id, skill):
+    def __init__(self, id, name, type, slack_id, skill):
         self.id = id
         self.name = name
+        self.type = type
         self.slack_id = slack_id
         self.skill = skill
 

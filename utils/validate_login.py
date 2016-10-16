@@ -9,7 +9,7 @@ from models import people
 from utils import errors
 
 
-def login_user(slack_id):
+def check_user_exists(slack_id):
     # Check if the user is already in the database
     q = people.User.query
     q = q.filter_by(slack_id=slack_id)
@@ -24,8 +24,33 @@ def login_user(slack_id):
     return result
 
 
-def register_user(userdata):
-    new_user = people.User()
+def register_user(userdata, team_data=None):
+    slack_data = session['new_user']
+    new_user = people.User(
+        id=uuid.uuid4(),
+        name=slack_data['name'],
+        type='hacker',
+        slack_id=slack_data['user_id'],
+        skill=userdata['skill'],
+    )
+
+    if team_data:
+        new_team = people.Team()
+        new_team.id = uuid.uuid4()
+        new_team.name = team_data['name']
+
+        new_user.team_id = new_team.id
+
+        db.session.add(new_team)
+    else:
+        new_user.team_id = userdata['team_id']
+
+    db.session.add(new_user)
+    db.session.commit()
+
+    login_user(new_user)
+
+    return new_user
 
 
 def get_user(uid):
