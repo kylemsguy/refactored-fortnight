@@ -7,7 +7,7 @@ from flask_login import login_required, logout_user, login_user
 from requests_oauthlib import OAuth2Session
 
 from endpoints.utils import root
-from utils.validate_login import valid_login, register_or_login
+from utils.validate_login import register_user, login_user
 from utils import errors
 
 client_id = os.environ['SOCIAL_AUTH_SLACK_KEY']
@@ -39,14 +39,29 @@ def oauth_success():
     if resp['team'] != 'Hack Western 3':
         raise errors.InvalidUsage("Expected Hack Western 3 team. Got {}".format(resp['team']))
 
-    person = register_or_login(resp['user_id'])
+    person = login_user(resp['user_id'])
 
-    return person
+    # No person in db. Register.
+    if not person:
+        session['new_user'] = resp
+        return redirect(url_for('register'))
+
+    # Login successful! Show dashboard.
+    return redirect('/')
 
 
 @root.route('/register', methods=['GET', 'POST'])
 def register():
-    return render_template("register.html")
+    new_user = session.get('new_user')
+
+    # No user to be registered
+    if not new_user:
+        return redirect('/')
+
+    if request.method == 'GET':
+        return render_template("register.html")
+    else:
+        register_user
 
 
 @root.route('/logout', methods=['GET'])

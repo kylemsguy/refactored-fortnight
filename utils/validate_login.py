@@ -9,12 +9,7 @@ from models import people
 from utils import errors
 
 
-def valid_login(username, password):
-    # TODO Implement
-    return username and password
-
-
-def register_or_login(slack_id):
+def login_user(slack_id):
     # Check if the user is already in the database
     q = people.User.query
     q = q.filter_by(slack_id=slack_id)
@@ -22,11 +17,15 @@ def register_or_login(slack_id):
     result = q.first()
 
     if not result:
-        return redirect(url_for('register'))
+        return None
 
     login_user(result)
 
     return result
+
+
+def register_user(userdata):
+    new_user = people.User()
 
 
 def get_user(uid):
