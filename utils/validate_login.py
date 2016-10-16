@@ -2,6 +2,8 @@ import uuid
 
 from flask import session, redirect, url_for, flash
 
+from flask_login import login_user
+
 from database import db
 from models import people
 from utils import errors
@@ -21,6 +23,8 @@ def register_or_login(slack_id):
 
     if not result:
         return redirect(url_for('register'))
+
+    login_user(result)
 
     return result
 

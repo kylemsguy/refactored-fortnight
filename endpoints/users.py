@@ -27,11 +27,6 @@ def login():
     return redirect(authorization_url)
 
 
-@root.route('/register', methods=['GET', 'POST'])
-def register():
-    return render_template("register.html")
-
-
 @root.route('/slack-authorized')
 def oauth_success():
     slack = OAuth2Session(client_id, state=session['oauth_state'])
@@ -46,19 +41,12 @@ def oauth_success():
 
     person = register_or_login(resp['user_id'])
 
-    return jsonify(req.json())
+    return person
 
-def old_login():
-    error = None
-    if request.method == 'POST':
-        if valid_login(request.form['user'],
-                       request.form['pass']):
-            return log_the_user_in(request.form['user'])
-        else:
-            error = 'Invalid username/password'
-    # the code below is executed if the request method
-    # was GET or the credentials were invalid
-    return render_template('login.html', error=error)
+
+@root.route('/register', methods=['GET', 'POST'])
+def register():
+    return render_template("register.html")
 
 
 @root.route('/logout', methods=['GET'])
