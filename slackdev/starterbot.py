@@ -25,6 +25,7 @@ message_timers = {}
 player_type = None  # String from THREE_CLASSES
 player_scores = {}  # front(0), back(1), design(2)
 player_roadblocks = {}
+global_timer = 0
 
 def handle_command(command, channel, message):
     """
@@ -47,6 +48,11 @@ def handle_command(command, channel, message):
     elif input.startswith("status"):
         if (stage == "unstarted"):
             response = "You need to start a game first! Type 'join game' to do so."
+        elif stage == "choose_position":
+            response = ("You need to choose a position! Type '@hackthewest <position> to tell me your position."
+                        "The options are front end developer, back end developer, and designer.")
+        elif stage == "blocked":
+            response = "You are currently blocked, and need to find a {}".format(player_roadblocks[channel])
         else:
             # TODO: return status
             pass
@@ -75,49 +81,49 @@ def handle_command(command, channel, message):
         response = response + " Progress will continue slowly as time goes by, type 'status' to check in. " + \
                 "Occasionally you'll come across a roadblock with your hack, " + \
                 "you'll need to network with the hackers around you to overcome these problems."
-    elif stage == "type_chosen" and input.startswith("link"):
+    #elif stage == "type_chosen" and input.startswith("link"):
         
 
     slack_client.api_call("chat.postMessage", channel=channel, text=response, as_user=True)
 
-def find
-
 def getOrInitializeUser(userid):
-	user = session.query(User).filter(User.slack_id == userid).one_or_none()
-	if user is None:
-		profile_info = slack_client.api_call("users.info", user=userid)
-		if profile_info['ok']:
-			user = User(name=profile_info['user']['profile']['first_name'], skill="nope")
-		else:
-			user = User(name="unknown", skill="nope")
-		session.add(user)
-		session.commit()
-	return user
+    user = session.query(User).filter(User.slack_id == userid).one_or_none()
+    if user is None:
+        profile_info = slack_client.api_call("users.info", user=userid)
+        if profile_info['ok']:
+            user = User(name=profile_info['user']['profile']['first_name'], skill="nope")
+        else:
+            user = User(name="unknown", skill="nope")
+        session.add(user)
+        session.commit()
+    return user
 
 def parse_slack_output(slack_rtm_output):
-	"""
-		The Slack Real Time Messaging API is an events firehose.
-		this parsing function returns None unless a message is
-		directed at the Bot, based on its ID.
-	"""
-	output_list = slack_rtm_output
-	if output_list and len(output_list) > 0:
-		for output in output_list:
-			if output and 'text' in output:
-				print(output)
-			if output and 'text' in output and AT_BOT in output['text']:
-				## return text after the @ mention, w/o whitespace
-				return output['text'].split(AT_BOT)[1].strip().lower(), output['channel'], output
-	return None, None, None
+    """
+        The Slack Real Time Messaging API is an events firehose.
+        this parsing function returns None unless a message is
+        directed at the Bot, based on its ID.
+    """
+    if slack_rtm_output:
+        print(slack_rtm_output)
+    output_list = slack_rtm_output
+    if output_list and len(output_list) > 0:
+        for output in output_list:
+            if output and 'text' in output:
+                print(output)
+            if output and 'text' in output and AT_BOT in output['text']:
+                ## return text after the @ mention, w/o whitespace
+                return output['text'].split(AT_BOT)[1].strip().lower(), output['channel'], output
+    return None, None, None
 
 def send_message(channel_id, message):
-	# channel_id can also be the form @username (all lowercase)
-	slack_client.api_call(
-		"chat.postMessage",
-		channel=channel_id,
-		text=message,
-		username='hackthewest',
-	)
+    # channel_id can also be the form @username (all lowercase)
+    slack_client.api_call(
+        "chat.postMessage",
+        channel=channel_id,
+        text=message,
+        username='hackthewest',
+    )
 
 
 def increment_timer():
@@ -125,10 +131,17 @@ def increment_timer():
         called each second to increment timer for all players
         if it exceeds SECONDS_TO_MESSAGE we randomly generate a role and send out a message
     """
+    global global_timer
+    global_timer += 1
 
     for timer_key in message_timers:
+        if global_timer > HOURS_IN_HACKATHON * 3600:
+            send_message(timer_key, "The hackathon has now ended. Please type 'status' for your score!")
+            continue
         if player_stages[timer_key] == "unstarted" or player_stages[timer_key] == "choose_positions":
             # don't increment
+            pass
+        elif player_stages[timer_key] == "blocked":
             pass
         else:
             # increment
@@ -139,7 +152,9 @@ def increment_timer():
                 message_timers[timer_key] = 0
                 # select roadblock of the three
                 role = THREE_CLASSES[randint(0,2)]
-                # TODO: block progress
+
+                # block progress
+                player_stages[timer_key] = "blocked"
                 
                 # send out response
                 response = "Roadblock! Find a " + role + " to continue progress on your hack!" + \
@@ -150,7 +165,7 @@ def increment_timer():
 
 ### TODO: Make link command, limit to one per person.
 ### TODO: validate their position
-### TODO: channel -> user?
+### TODO: channel -> user
 ### TODO: increment score
 ### TODO: convert score to percentage
 ### TODO: status command
@@ -168,5 +183,7 @@ if __name__ == "__main__":
                                 handle_command(command, channel, message)
                         increment_timer()
                         time.sleep(READ_WEBSOCKET_DELAY)
+                        if global_timer > HOURS_IN_HACKATHON * 3600:
+                            break
         else:
                 print("Connection failed. Invalid Slack token or bot ID?")
