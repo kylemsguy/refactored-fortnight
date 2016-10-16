@@ -27,11 +27,9 @@ def login():
     return redirect(authorization_url)
 
 
-#@root.route('/register', methods=['GET', 'POST'])
+@root.route('/register', methods=['GET', 'POST'])
 def register():
-    pass
-    # if request.method == 'POST':
-    #     register_user()
+    return render_template("register.html")
 
 
 @root.route('/slack-authorized')

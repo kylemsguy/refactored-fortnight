@@ -1,6 +1,6 @@
 import uuid
 
-from flask import session
+from flask import session, redirect, url_for, flash
 
 from database import db
 from models import people
@@ -18,6 +18,11 @@ def register_or_login(slack_id):
     q = q.filter_by(slack_id=slack_id)
 
     result = q.first()
+
+    if not result:
+        return redirect(url_for('register'))
+
+    return result
 
 
 def get_user(uid):
