@@ -12,26 +12,13 @@ def valid_login(username, password):
     return username and password
 
 
-def log_the_user_in(username):
-    # TODO change to user id once things are implemented
-    session['username'] = username
-    return "Welcome, {}".format(username)
+def register_or_login(slack_id):
+    # Check if the user is already in the database
+    q = people.User.query
+    q = q.filter_by(slack_id=slack_id)
 
+    result = q.first()
 
-def is_logged_in():
-    return 'username' in session
-
-def register_user():
-    if not is_logged_in():
-        # register user
-        pass
-    else:
-        raise errors.InvalidUsage('Cannot register while logged in', status_code=403)
-
-def create_user(username, password):
-    user = people.User(
-        name=username,
-    )
 
 def get_user(uid):
     """Returns the currently logged in user"""
